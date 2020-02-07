@@ -5,6 +5,7 @@ require (
 	cloud.google.com/go/storage v1.4.0 // indirect
 	github.com/aws/aws-sdk-go v1.26.5 // indirect
 	github.com/dghubble/sling v1.3.0 // indirect
+	github.com/fatih/structs v1.1.0
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/hashicorp/go-hclog v0.10.1 // indirect
@@ -35,5 +36,7 @@ require (
 )
 
 replace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999 // indirect
+
+replace github.com/jianyuan/go-sentry => /home/bewiwi/go/src/github.com/jianyuan/go-sentry
 
 go 1.13

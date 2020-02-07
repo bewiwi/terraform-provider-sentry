@@ -1,6 +1,8 @@
 package sentry
 
 import (
+	"encoding/json"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/jianyuan/go-sentry/sentry"
 	"github.com/mitchellh/mapstructure"
@@ -151,11 +153,26 @@ func resourceSentryRuleRead(d *schema.ResourceData, meta interface{}) error {
 		d.SetId("")
 		return nil
 	}
+	var conditions []map[string]interface{}
+	for _, ruleCondition := range rule.Conditions {
+		var condition map[string]interface{}
+		inrec, _ := json.Marshal(ruleCondition)
+		json.Unmarshal(inrec, &condition)
+		conditions = append(conditions, condition)
+	}
+
+	var actions []map[string]interface{}
+	for _, ruleAction := range rule.Actions {
+		var action map[string]interface{}
+		inrec, _ := json.Marshal(ruleAction)
+		json.Unmarshal(inrec, &action)
+		actions = append(actions, action)
+	}
 
 	d.SetId(rule.ID)
 	d.Set("name", rule.Name)
-	d.Set("actions", rule.Actions)
-	d.Set("conditions", rule.Conditions)
+	d.Set("actions", actions)
+	d.Set("conditions", conditions)
 	d.Set("frequency", rule.Frequency)
 	d.Set("environment", rule.Environment)
 
@@ -198,15 +215,15 @@ func resourceSentryRuleUpdate(d *schema.ResourceData, meta interface{}) error {
 	params := &sentry.Rule{
 		ID:          id,
 		ActionMatch: actionMatch,
-		Environment: environment,
+		Environment: &environment,
 		Frequency:   frequency,
 		Name:        name,
 		Conditions:  conditions,
 		Actions:     actions,
 	}
 
-	if environment != "" {
-		params.Environment = environment
+	if environment == "" {
+		params.Environment = nil
 	}
 
 	_, _, err := client.Rules.Update(org, project, id, params)
